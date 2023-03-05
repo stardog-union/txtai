@@ -40,7 +40,7 @@ jobs:
       - name: Install dependencies - macOS
         run: |
           brew install libomp
-          pip install torch==1.12.1 torchvision==0.13.1 onnxruntime==1.13.1
+          pip install torch==1.12.1 torchvision==0.13.1
         if: matrix.os == 'macos-latest'
 
       - name: Install dependencies - Windows
@@ -50,7 +50,7 @@ jobs:
       - name: Build
         run: |
           pip install -U pip wheel
-          pip install .[all,dev]
+          pip install .[all,dev] skl2onnx==1.13
           python -c "import nltk; nltk.download('punkt')"
           python --version
           make data coverage

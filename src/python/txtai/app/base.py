@@ -107,9 +107,14 @@ class Application:
             if pipeline in self.config:
                 config = self.config[pipeline] if self.config[pipeline] else {}
 
+                # Add application reference, if requested
+                if "application" in config:
+                    config["application"] = self
+
                 # Custom pipeline parameters
-                if pipeline == "extractor":
-                    config["similarity"] = self.embeddings
+                if pipeline == "extractor" and "similarity" not in config:
+                    # Add placeholder, will be set to embeddings index once initialized
+                    config["similarity"] = None
                 elif pipeline == "similarity" and "path" not in config and "labels" in self.pipelines:
                     config["model"] = self.pipelines["labels"]
 
@@ -194,6 +199,11 @@ class Application:
             # Initialize empty embeddings
             self.embeddings = Embeddings(config)
 
+        # If an extractor pipeline is defined and the similarity attribute is None, set to embeddings index
+        extractor = self.pipelines.get("extractor")
+        if extractor and not extractor.similarity:
+            extractor.similarity = self.embeddings
+
     def resolve(self, task):
         """
         Resolves callable functions for a task.
@@ -273,8 +283,6 @@ class Application:
         a list of {id: value, score: value} sorted by highest score, where id is the
         document id in the embeddings model.
 
-        Downstream applications can override this method to provide enriched search results.
-
         Args:
             query: query text
             limit: maximum results, used if request is None
@@ -321,8 +329,6 @@ class Application:
     def add(self, documents):
         """
         Adds a batch of documents for indexing.
-
-        Downstream applications can override this method to also store full documents in an external system.
 
         Args:
             documents: list of {id: value, text: value, tags: value}
@@ -600,14 +606,11 @@ class Application:
         """
 
         if self.embeddings and "extractor" in self.pipelines:
-            # Set similarity function
+            # Get extractor instance
             extractor = self.pipelines["extractor"]
-            if not extractor.similarity:
-                extractor.similarity = self.embeddings
 
-            # Convert queue to tuples
-            queue = [(x["name"], x["query"], x.get("question"), x.get("snippet")) for x in queue]
-            return [{"name": name, "answer": answer} for name, answer in extractor(queue, texts)]
+            # Run extractor and return results as dicts
+            return extractor(queue, texts)
 
         return None
 
