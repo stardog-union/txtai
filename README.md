@@ -180,6 +180,7 @@ Efficiently process data at scale.
 | [Push notifications with workflows](https://github.com/neuml/txtai/blob/master/examples/28_Push_notifications_with_workflows.ipynb) | Generate and push notifications with workflows | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/neuml/txtai/blob/master/examples/28_Push_notifications_with_workflows.ipynb) |
 | [Pictures are a worth a thousand words](https://github.com/neuml/txtai/blob/master/examples/35_Pictures_are_worth_a_thousand_words.ipynb) | Generate webpage summary images with DALL-E mini | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/neuml/txtai/blob/master/examples/35_Pictures_are_worth_a_thousand_words.ipynb) |
 | [Run txtai with native code](https://github.com/neuml/txtai/blob/master/examples/36_Run_txtai_in_native_code.ipynb) | Execute workflows in native code with the Python C API | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/neuml/txtai/blob/master/examples/36_Run_txtai_in_native_code.ipynb) |
+| [Prompt templates and task chains](https://github.com/neuml/txtai/blob/master/examples/44_Prompt_templates_and_task_chains.ipynb) | Build model prompts and connect tasks together with workflows | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/neuml/txtai/blob/master/examples/44_Prompt_templates_and_task_chains.ipynb) |
 
 ### Model Training
 
@@ -207,11 +208,11 @@ Series of example applications with txtai. Links to hosted versions on [Hugging 
 | [Wiki search](https://github.com/neuml/txtai/blob/master/examples/wiki.py) | Wikipedia search application. Queries Wikipedia API and summarizes the top result. |[🤗](https://hf.co/spaces/NeuML/wikisummary)|
 | [Workflow builder](https://github.com/neuml/txtai/blob/master/examples/workflows.py) | Build and execute txtai workflows. Connect summarization, text extraction, transcription, translation and similarity search pipelines together to run unified workflows. |[🤗](https://hf.co/spaces/NeuML/txtai)|
 
-### Documentation
+## Documentation
 
 [Full documentation on txtai](https://neuml.github.io/txtai) including configuration settings for pipelines, workflows, indexing and the API.
 
-### Further Reading
+## Further Reading
 
 ![further](https://raw.githubusercontent.com/neuml/txtai/master/docs/images/further.png)
 
@@ -225,6 +226,6 @@ Series of example applications with txtai. Links to hosted versions on [Hugging 
 - [Insights from the txtai console](https://medium.com/neuml/insights-from-the-txtai-console-d307c28e149e)
 - [The big and small of txtai](https://medium.com/neuml/the-big-and-small-of-txtai-4ca405c1b82)
 
-### Contributing
+## Contributing
 
 For those who would like to contribute to txtai, please see [this guide](https://github.com/neuml/.github/blob/master/CONTRIBUTING.md).

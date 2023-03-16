@@ -107,7 +107,8 @@ class TestCloud(unittest.TestCase):
             if "Invalid" in kwargs["repo_id"]:
                 raise FileNotFoundError
 
-            return index
+            # Return either .gitattributes file or index
+            return attributes if kwargs["filename"] == ".gitattributes" else index
 
         # Patch write methods since token will not be available
         create.return_value = None
@@ -121,6 +122,12 @@ class TestCloud(unittest.TestCase):
         # Generate temp file path
         index = os.path.join(tempfile.gettempdir(), f"cloud.{provider}.tar.gz")
         self.embeddings.save(index)
+
+        # Initialize attributes file
+        # pylint: disable=R1732
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as tmp:
+            tmp.write("*.bin filter=lfs diff=lfs merge=lfs -text\n")
+            attributes = tmp.name
 
         # Run tests with uncompressed and compressed index
         for path in [f"cloud.{provider}", f"cloud.{provider}.tar.gz"]:

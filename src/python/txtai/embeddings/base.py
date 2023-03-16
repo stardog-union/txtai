@@ -25,6 +25,7 @@ from .functions import Functions
 from .reducer import Reducer
 from .query import Query
 from .search import Search
+from .terms import Terms
 from .transform import Action, Transform
 
 
@@ -60,6 +61,9 @@ class Embeddings:
 
         # Document database
         self.database = None
+
+        # Resolvable functions
+        self.functions = None
 
         # Graph network
         self.graph = None
@@ -150,8 +154,8 @@ class Embeddings:
             documents: list of (id, data, tags)
         """
 
-        # Run standard insert if index doesn't exist
-        if not self.ann:
+        # Run standard insert if index doesn't exist or it has no records
+        if not self.count():
             self.index(documents)
             return
 
@@ -178,7 +182,7 @@ class Embeddings:
 
         # Graph upsert, if necessary
         if self.graph:
-            self.graph.upsert(Search(self, True))
+            self.graph.upsert(Search(self, True), self.batchsimilarity)
 
     def delete(self, ids):
         """
@@ -250,6 +254,10 @@ class Embeddings:
 
             # Reset configuration
             self.configure(config)
+
+            # Reset function references
+            if self.functions:
+                self.functions.reset()
 
             # Reindex
             if function:
@@ -397,7 +405,7 @@ class Embeddings:
         Explains the importance of each input token in text for a list of queries.
 
         Args:
-            query: input queries
+            queries: input queries
             texts: optional list of (text|list of tokens), otherwise runs search queries
             limit: optional limit if texts is None
 
@@ -406,6 +414,32 @@ class Embeddings:
         """
 
         return Explain(self)(queries, texts, limit)
+
+    def terms(self, query):
+        """
+        Extracts keyword terms from a query.
+
+        Args:
+            query: input query
+
+        Returns:
+            query reduced down to keyword terms
+        """
+
+        return self.batchterms([query])[0]
+
+    def batchterms(self, queries):
+        """
+        Extracts keyword terms from a list of queries.
+
+        Args:
+            queries: list of queries
+
+        Returns:
+            list of queries reduced down to keyword term strings
+        """
+
+        return Terms(self)(queries)
 
     def exists(self, path=None, cloud=None, **kwargs):
         """
@@ -552,7 +586,7 @@ class Embeddings:
         # Close database connection if open
         if self.database:
             self.database.close()
-            self.database = None
+            self.database, self.functions = None, None
 
     def info(self):
         """
@@ -734,9 +768,10 @@ class Embeddings:
 
         config = self.config.copy()
 
-        # Resolve callable functions
-        if "functions" in config:
-            config["functions"] = Functions(self)(config)
+        # Create references to callable functions
+        self.functions = Functions(self) if "functions" in config else None
+        if self.functions:
+            config["functions"] = self.functions(config)
 
         # Create database from config and return
         return DatabaseFactory.create(config)
